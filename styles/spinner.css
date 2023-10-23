@@ -1,0 +1,156 @@
+.spinner-container {
+  max-width: 100%;
+  margin: 0 auto;
+  margin-top: -20px;
+}
+
+.linear-bg {
+  background: linear-gradient(#022728, #022728) padding-box,
+    linear-gradient(60deg, #00e5ed, #ff9034) border-box;
+  border: 1px solid transparent;
+}
+
+.spinner {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  max-width: 100%;
+  gap: 20px;
+  overflow: hidden;
+}
+
+.spinner-titles {
+  color: #bbdcdd;
+  font-family: DM Sans;
+  font-weight: 500;
+  font-size: 17px;
+}
+
+.spinner-titles h1 {
+  color: #bbdcdd;
+  font-family: DM Sans;
+  font-weight: 700;
+  font-size: 22px;
+}
+
+.spinner-prize {
+  width: 120px;
+  font-weight: 500;
+  margin-top: 10px;
+}
+
+.relative {
+  position: relative;
+}
+
+.icon-on-top {
+  rotate: 180deg;
+  margin: 0 auto;
+  transform: translateY(85%);
+}
+
+.icon-arrow-down {
+  margin: 0 auto;
+  transform: translateY(-15%);
+}
+
+.spinner-prize-img-container {
+  background: #022728;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  justify-content: center;
+  width: 130px;
+  height: 130px;
+  border: 1px solid #00e5ed;
+  align-items: center;
+}
+
+.spinner-prize-description p {
+  color: white;
+  font-family: DM Sans;
+  text-shadow: 0px 0px 13px #00e5ed;
+  font-size: 14px;
+  text-wrap: nowrap;
+}
+
+.nft-img-spinner {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.spinner-prize img {
+  margin: 0 auto;
+}
+
+.spinner-button {
+  border-radius: 8px;
+  border: 1px solid #00e5ed;
+  background: #016f73;
+  width: 225px;
+  height: 60px;
+  justify-content: center;
+  font-family: DM Sans;
+  font-weight: 500;
+  font-size: 20px;
+  color: white;
+  transition: all 0.3s ease-in-out;
+}
+
+.daily-spin-text {
+  color: #3ee215;
+  font-family: DM Sans;
+  text-shadow: 0px 0px 15px #3f0;
+  font-weight: 500;
+}
+
+.spinner-btn-container.green-glow-button:active {
+  border: 6px solid #3f0;
+  box-shadow: 0px 0px 6px 0px #3f0;
+  border-radius: 10px;
+}
+.spinner-btn-container.blue-glow-button:active {
+  border: 6px solid #00e5ed;
+  box-shadow: 0px 0px 6px 0px #00e5ed;
+  border-radius: 10px;
+}
+
+.spinner-btn-container {
+  border: 6px solid #000;
+  display: inline-block;
+  border-radius: 10px;
+  transition: all 0.3s ease, transform 0.3s ease;
+  background: #022728;
+}
+
+.spinner-prize-description-blur {
+  color: white;
+  height: 60px;
+  font-family: DM Sans;
+  text-shadow: 0px 0px 13px #00e5ed;
+  border-radius: 0px 0px 8px 8px;
+  border-top: 1px solid #016f73;
+  border-right: 1px solid #016f73;
+  border-bottom: 1px solid #016f73;
+  border-left: 1px solid #016f73;
+  background: #022728;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+
+
+@keyframes spin {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(calc(-100% - var(--stopAt)));
+  }
+}
+
+.moving {
+  animation: spin 5s ease-out forwards;
+}
