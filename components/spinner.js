@@ -46,7 +46,6 @@ function Spinner({ spinnerRewardsData }) {
   const [randomizedData, setRandomizedData] = useState([]); // This will be the array that is used to render the spinner
   const [spinnerRewardData, setSpinnerRewardData] =
     useState(spinnerRewardsData);
-
   const settings = {
     arrows: false,
     draggable: false,
@@ -107,6 +106,8 @@ function Spinner({ spinnerRewardsData }) {
         return setTimeout(() => {
           changeSlideHandler();
         }, speed);
+      } else {
+        return sliderRef.current.slickGoTo(winnerIndex);
       }
     };
     changeSlideHandler();
