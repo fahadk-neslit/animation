@@ -8,6 +8,12 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
+function delay(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -38,18 +44,28 @@ function generateProbabilityArray(data, minItems = 50) {
 function Spinner({ spinnerRewardsData }) {
   const [marketType, setMarketType] = useState(false);
   const [randomizedData, setRandomizedData] = useState([]); // This will be the array that is used to render the spinner
-  const [randomizedInitialData, setRandomizedInitialData] = useState([]); // This will be the array that is used to render the spinner
   const [spinnerRewardData, setSpinnerRewardData] =
     useState(spinnerRewardsData);
 
-  console.log("spinnerRewardData", spinnerRewardData);
-  const spinnerRef = useRef(null); // Create a ref for the spinner container
-
-  //   spinner states
-  const [isSpinning, setIsSpinning] = useState(false);
-  const [winner, setWinner] = useState(null);
-  const [animationStopPoint, setAnimationStopPoint] = useState(0);
-  const [finalStyle, setFinalStyle] = useState({});
+  const settings = {
+    arrows: false,
+    draggable: false,
+    useTransform: true,
+    useCSS: true,
+    centerMode: true,
+    easing: "linear",
+    // cssEase: "cubic-bezier(.24,1.41,.54,1.01)",
+    speed: 10,
+    waitForAnimate: true,
+    dots: false,
+    infinite: true,
+    // autoplaySpeed: 500,
+    variableWidth: true,
+    adaptiveHeight: true,
+    slidesToScroll: 1,
+    autoplay: false,
+    centerPadding: "50px",
+  };
 
   useEffect(() => {
     if (spinnerRewardData) {
@@ -69,36 +85,31 @@ function Spinner({ spinnerRewardsData }) {
       );
 
       setRandomizedData(newRandomizedData);
-      setRandomizedInitialData(newRandomizedData);
     }
   }, [spinnerRewardData]);
 
   const sliderRef = useRef(null);
 
-  const settings = {
-    arrows: false,
-    draggable: false,
-    useTransform: true,
-    waitForAnimate: true,
-    dots: false,
-    infinite: true,
-    speed: 5000,
-    slidesToShow: 7, // Adjusted to 5 for center mode
-    slidesToScroll: 1,
-    autoplay: false,
-    autoplaySpeed: 500, // Use the dynamic autoplaySpeed
-    centerMode: true, // Enable center mode
-    centerPadding: "0", // Adjust as needed
-  };
-
-  const randomizedDataLegth = randomizedData?.length;
   const handleTestSpin = () => {
-    setRandomizedData(randomizedInitialData);
-    const winnerIndex = Math.floor(
-      Math.random() * randomizedInitialData.length
-    );
-    setRandomizedData((prev) => [...prev, ...prev, ...prev, ...prev]);
-    sliderRef.current.slickGoTo(randomizedDataLegth * 3 + winnerIndex);
+    const winnerIndex = Math.floor(Math.random() * randomizedData.length);
+
+    let slidesTraveled = 0;
+    let speed = 50;
+
+    const changeSlideHandler = async () => {
+      sliderRef.current.slickNext();
+      slidesTraveled++;
+
+      if (slidesTraveled !== randomizedData.length * 2) {
+        if (slidesTraveled + 10 > randomizedData.length * 2) {
+          speed += 50;
+        }
+        return setTimeout(() => {
+          changeSlideHandler();
+        }, speed);
+      }
+    };
+    changeSlideHandler();
   };
 
   return (
@@ -135,16 +146,7 @@ function Spinner({ spinnerRewardsData }) {
                 reward.type === "ALPHAPOINTS"
               ) {
                 return (
-                  <div
-                    key={index}
-                    style={
-                      {
-                        // ...spinnerStyle,
-                        // transition:
-                        //   "transform 7.5s cubic-bezier(0.1, 0, 0.2, 1) 0s",
-                      }
-                    }
-                  >
+                  <div key={index}>
                     {" "}
                     <div className="spinner-prize-img-container">
                       <Image
@@ -162,16 +164,7 @@ function Spinner({ spinnerRewardsData }) {
                 );
               } else if (reward.type === "NFT") {
                 return (
-                  <div
-                    key={index}
-                    style={
-                      {
-                        // ...spinnerStyle,
-                        // transition:
-                        //   "transform 7.5s cubic-bezier(0.1, 0, 0.2, 1) 0s",
-                      }
-                    }
-                  >
+                  <div key={index}>
                     <div className="spinner-prize-img-container">
                       <img
                         src={`${reward.image}`}
