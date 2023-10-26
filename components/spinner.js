@@ -3,10 +3,9 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
 import { TbTriangleInvertedFilled } from "react-icons/tb";
 import { AwesomeButton } from "react-awesome-button";
-import Slider from "react-slick";
-
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/bundle";
 
 function delay(ms) {
   return new Promise((resolve) => {
@@ -46,25 +45,7 @@ function Spinner({ spinnerRewardsData }) {
   const [randomizedData, setRandomizedData] = useState([]); // This will be the array that is used to render the spinner
   const [spinnerRewardData, setSpinnerRewardData] =
     useState(spinnerRewardsData);
-  const settings = {
-    arrows: false,
-    draggable: false,
-    useTransform: true,
-    useCSS: true,
-    centerMode: true,
-    easing: "linear",
-    // cssEase: "cubic-bezier(.24,1.41,.54,1.01)",
-    speed: 10,
-    waitForAnimate: true,
-    dots: false,
-    infinite: true,
-    // autoplaySpeed: 500,
-    variableWidth: true,
-    adaptiveHeight: true,
-    slidesToScroll: 1,
-    autoplay: false,
-    centerPadding: "50px",
-  };
+  const [slidesPerView, setSlidesPerView] = useState(0);
 
   useEffect(() => {
     if (spinnerRewardData) {
@@ -80,7 +61,7 @@ function Spinner({ spinnerRewardsData }) {
       // Duplicate rewards 5 times (or however many times you want) and shuffle
       const newRandomizedData = duplicateAndShuffleRewards(
         spinnerRewardData,
-        5
+        20
       );
 
       setRandomizedData(newRandomizedData);
@@ -89,29 +70,36 @@ function Spinner({ spinnerRewardsData }) {
 
   const sliderRef = useRef(null);
 
-  const handleTestSpin = () => {
-    const winnerIndex = Math.floor(Math.random() * randomizedData.length);
+  function getRandomNumber(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  }
 
-    let slidesTraveled = 0;
-    let speed = 50;
-
-    const changeSlideHandler = async () => {
-      sliderRef.current.slickNext();
-      slidesTraveled++;
-
-      if (slidesTraveled !== randomizedData.length * 2) {
-        if (slidesTraveled + 10 > randomizedData.length * 2) {
-          speed += 50;
-        }
-        return setTimeout(() => {
-          changeSlideHandler();
-        }, speed);
-      } else {
-        return sliderRef.current.slickGoTo(winnerIndex);
-      }
-    };
-    changeSlideHandler();
+  const handleTestSpin = async () => {
+    if (!sliderRef.current.swiper.animating) {
+      const winnerIndex = getRandomNumber(
+        randomizedData.length - 40,
+        randomizedData.length - 8
+      );
+      sliderRef.current?.swiper.slideTo(7, 0, false);
+      await delay(50);
+      sliderRef.current?.swiper.slideTo(winnerIndex, 10000);
+    }
   };
+
+  useEffect(() => {
+    // add slides as screen changes
+    const conatinerSize = document.querySelector(".swiper-wrapper");
+    window.addEventListener("resize", () => {
+      const slidesAsPerScreen = Math.floor(conatinerSize.offsetWidth / 130);
+      setSlidesPerView(
+        slidesAsPerScreen % 2 === 0 ? slidesAsPerScreen - 1 : slidesAsPerScreen
+      );
+    });
+    const slidesAsPerScreen = Math.floor(conatinerSize.offsetWidth / 130);
+    setSlidesPerView(
+      slidesAsPerScreen % 2 === 0 ? slidesAsPerScreen + 1 : slidesAsPerScreen
+    );
+  }, []);
 
   return (
     <>
@@ -131,14 +119,35 @@ function Spinner({ spinnerRewardsData }) {
             <h2 className="ml-auto">Prizes Won: -/-</h2>
           </div>
 
-          <div className="h-[1px] relative z-50 rounded-xl linear-bg">
+          <div className="h-[1px] relative z-50 mb-4 rounded-xl linear-bg">
             <TbTriangleInvertedFilled className="icon-arrow-down m-auto text-[28px] text-[#00E5ED]" />
           </div>
-
-          <Slider
-            {...settings}
+          <Swiper
+            allowTouchMove={false}
             ref={sliderRef}
-            className={`flex mt-3 mb-5 h-[130px] overflow-hidden`}
+            centeredSlides={true}
+            initialSlide={7}
+            direction="horizontal"
+            slidesPerView={slidesPerView}
+            spaceBetween={3}
+            observer
+            observeParents
+            centerInsufficientSlides
+            onSlideChange={(swiper) => {
+              console.log("====================================");
+              console.log("slide change");
+              console.log("====================================");
+            }}
+            onSlideChangeTransitionEnd={() => {
+              console.log("====================================");
+              console.log("slide change transition start");
+              console.log("====================================");
+            }}
+            onSlideNextTransitionEnd={() => {
+              console.log("====================================");
+              console.log("slide change transition end");
+              console.log("====================================");
+            }}
           >
             {randomizedData.map((reward, index) => {
               if (
@@ -147,8 +156,7 @@ function Spinner({ spinnerRewardsData }) {
                 reward.type === "ALPHAPOINTS"
               ) {
                 return (
-                  <div key={index}>
-                    {" "}
+                  <SwiperSlide key={index}>
                     <div className="spinner-prize-img-container">
                       <Image
                         src={`${reward.image}`}
@@ -161,11 +169,11 @@ function Spinner({ spinnerRewardsData }) {
                         <p>{reward.description}</p>
                       </div>
                     </div>
-                  </div>
+                  </SwiperSlide>
                 );
               } else if (reward.type === "NFT") {
                 return (
-                  <div key={index}>
+                  <SwiperSlide key={index}>
                     <div className="spinner-prize-img-container">
                       <img
                         src={`${reward.image}`}
@@ -174,15 +182,14 @@ function Spinner({ spinnerRewardsData }) {
                         draggable={false}
                       />
                     </div>
-                  </div>
+                  </SwiperSlide>
                 );
               } else {
                 return null;
               }
             })}
-          </Slider>
-
-          <div className="h-[1px] rounded-xl linear-bg">
+          </Swiper>
+          <div className="h-[1px] relative z-50 mt-4 rounded-xl linear-bg">
             <TbTriangleInvertedFilled className="icon-on-top text-[28px] text-[#00E5ED]" />
           </div>
         </div>

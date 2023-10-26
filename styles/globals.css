@@ -11,7 +11,6 @@
 .stat-container {
   background: #022728;
 }
-.slick-slide {
-  padding-left: 5px !important;
-  padding-right: 5px !important;
+.swiper-slide {
+  width: auto;
 }
