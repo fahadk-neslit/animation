@@ -66,6 +66,11 @@
   align-items: center;
 }
 
+.active-item-shadow {
+  box-shadow: 0px 1px 8px 1px rgba(0, 229, 237, 0.56) inset;
+  -webkit-box-shadow: 0px 1px 8px 1px rgba(0, 229, 237, 0.56) inset;
+  -moz-box-shadow: 0px 1px 8px 1px rgba(0, 229, 237, 0.56) inset;
+}
 .spinner-prize-description p {
   color: white;
   font-family: DM Sans;
@@ -140,7 +145,6 @@
   justify-content: center;
   display: flex;
 }
-
 
 @keyframes spin {
   0% {

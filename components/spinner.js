@@ -46,7 +46,9 @@ function Spinner({ spinnerRewardsData }) {
   const [spinnerRewardData, setSpinnerRewardData] =
     useState(spinnerRewardsData);
   const [slidesPerView, setSlidesPerView] = useState(0);
+  const winningIndex = useRef(null);
   const sound = useRef(null);
+  const coinSound = useRef(null);
 
   useEffect(() => {
     if (spinnerRewardData) {
@@ -75,20 +77,8 @@ function Spinner({ spinnerRewardsData }) {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
   const handleSoundPlay = async (wIndex) => {
-    let time = 10;
-    const playSound = () => {
-      sound.current.currentTime = 5;
-      sound.current?.play();
-      // time += 10;
-      // if (time < 430) {
-      //   setTimeout(() => {
-      //     playSound();
-      //   }, time);
-      // } else {
-      //   sound.current.stop();
-      // }
-    };
-    playSound();
+    sound.current.currentTime = 5;
+    sound.current?.play();
   };
 
   const handleTestSpin = async () => {
@@ -98,9 +88,10 @@ function Spinner({ spinnerRewardsData }) {
         randomizedData.length - 8
       );
       sliderRef.current?.swiper.slideTo(7, 0, false);
-      await delay(50);
       handleSoundPlay(winnerIndex);
+      await delay(50);
       sliderRef.current?.swiper.slideTo(winnerIndex, 10000);
+      winningIndex.current = winnerIndex;
     }
   };
 
@@ -118,7 +109,9 @@ function Spinner({ spinnerRewardsData }) {
       slidesAsPerScreen % 2 === 0 ? slidesAsPerScreen + 1 : slidesAsPerScreen
     );
     const audio = new Audio("/sounds/spinner.wav");
+    const coin = new Audio("/sounds/coin-collect.mp3");
     sound.current = audio;
+    coinSound.current = coin;
   }, []);
 
   return (
@@ -147,13 +140,38 @@ function Spinner({ spinnerRewardsData }) {
             ref={sliderRef}
             centeredSlides={true}
             centerInsufficientSlides
-            // centeredSlidesBounds
             initialSlide={7}
             direction="horizontal"
             slidesPerView={slidesPerView}
             spaceBetween={3}
             observer
             observeParents
+            onSlideChangeTransitionEnd={(swiper) => {
+              if (winningIndex.current !== null) {
+                coinSound.current.play();
+                setTimeout(() => {
+                  coinSound.current.volume = 1;
+                  coinSound.current.currentTime = 0.1;
+                  coinSound.current?.pause();
+                  coinSound.current.currentTime = 0;
+                }, 800);
+                document
+                  .querySelector(
+                    ".swiper-slide-active .spinner-prize-img-container img"
+                  )
+                  .animate(
+                    [
+                      { transform: "scale(0)" },
+                      { transform: "scale(1.02)" },
+                      { transform: "scale(1)" },
+                    ],
+                    {
+                      duration: 400,
+                    }
+                  );
+                winningIndex.current = null;
+              }
+            }}
           >
             {randomizedData.map((reward, index) => {
               if (
