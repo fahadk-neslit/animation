@@ -77,16 +77,18 @@ function Spinner({ spinnerRewardsData }) {
   const handleSoundPlay = async (wIndex) => {
     let time = 10;
     const playSound = () => {
-      sound.current.currentTime = 0;
+      sound.current.currentTime = 5;
       sound.current?.play();
-      time += 10;
-      if (time < 430) {
-        setTimeout(() => {
-          playSound();
-        }, time);
-      }
+      // time += 10;
+      // if (time < 430) {
+      //   setTimeout(() => {
+      //     playSound();
+      //   }, time);
+      // } else {
+      //   sound.current.stop();
+      // }
     };
-    return playSound();
+    playSound();
   };
 
   const handleTestSpin = async () => {
@@ -97,8 +99,7 @@ function Spinner({ spinnerRewardsData }) {
       );
       sliderRef.current?.swiper.slideTo(7, 0, false);
       await delay(50);
-      await handleSoundPlay(winnerIndex);
-
+      handleSoundPlay(winnerIndex);
       sliderRef.current?.swiper.slideTo(winnerIndex, 10000);
     }
   };
@@ -116,7 +117,7 @@ function Spinner({ spinnerRewardsData }) {
     setSlidesPerView(
       slidesAsPerScreen % 2 === 0 ? slidesAsPerScreen + 1 : slidesAsPerScreen
     );
-    const audio = new Audio("/sounds/spinner.mp3");
+    const audio = new Audio("/sounds/spinner.wav");
     sound.current = audio;
   }, []);
 
