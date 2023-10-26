@@ -46,6 +46,7 @@ function Spinner({ spinnerRewardsData }) {
   const [spinnerRewardData, setSpinnerRewardData] =
     useState(spinnerRewardsData);
   const [slidesPerView, setSlidesPerView] = useState(0);
+  const sound = useRef(null);
 
   useEffect(() => {
     if (spinnerRewardData) {
@@ -73,6 +74,20 @@ function Spinner({ spinnerRewardsData }) {
   function getRandomNumber(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
+  const handleSoundPlay = async (wIndex) => {
+    let time = 10;
+    const playSound = () => {
+      sound.current.currentTime = 0;
+      sound.current?.play();
+      time += 10;
+      if (time < 430) {
+        setTimeout(() => {
+          playSound();
+        }, time);
+      }
+    };
+    return playSound();
+  };
 
   const handleTestSpin = async () => {
     if (!sliderRef.current.swiper.animating) {
@@ -82,6 +97,8 @@ function Spinner({ spinnerRewardsData }) {
       );
       sliderRef.current?.swiper.slideTo(7, 0, false);
       await delay(50);
+      await handleSoundPlay(winnerIndex);
+
       sliderRef.current?.swiper.slideTo(winnerIndex, 10000);
     }
   };
@@ -99,6 +116,8 @@ function Spinner({ spinnerRewardsData }) {
     setSlidesPerView(
       slidesAsPerScreen % 2 === 0 ? slidesAsPerScreen + 1 : slidesAsPerScreen
     );
+    const audio = new Audio("/sounds/spinner.mp3");
+    sound.current = audio;
   }, []);
 
   return (
@@ -126,28 +145,14 @@ function Spinner({ spinnerRewardsData }) {
             allowTouchMove={false}
             ref={sliderRef}
             centeredSlides={true}
+            centerInsufficientSlides
+            // centeredSlidesBounds
             initialSlide={7}
             direction="horizontal"
             slidesPerView={slidesPerView}
             spaceBetween={3}
             observer
             observeParents
-            centerInsufficientSlides
-            onSlideChange={(swiper) => {
-              console.log("====================================");
-              console.log("slide change");
-              console.log("====================================");
-            }}
-            onSlideChangeTransitionEnd={() => {
-              console.log("====================================");
-              console.log("slide change transition start");
-              console.log("====================================");
-            }}
-            onSlideNextTransitionEnd={() => {
-              console.log("====================================");
-              console.log("slide change transition end");
-              console.log("====================================");
-            }}
           >
             {randomizedData.map((reward, index) => {
               if (
